@@ -2,7 +2,7 @@
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 
-internal class CreateFactCommandValidator : AbstractValidator<CreateFactCommand>
+public class CreateFactCommandValidator : AbstractValidator<CreateFactCommand>
 {
     private readonly int _maxTitleLength;
     private readonly int _maxFactContentLength;
