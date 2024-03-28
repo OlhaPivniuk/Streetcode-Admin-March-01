@@ -1,4 +1,5 @@
 using Hangfire;
+using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
@@ -13,6 +14,10 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 var app = builder.Build();
 
 if (app.Environment.EnvironmentName == "Local")

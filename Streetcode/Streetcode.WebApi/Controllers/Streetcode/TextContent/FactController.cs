@@ -7,18 +7,22 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.BLL.ActionFilters;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
 public class FactController : BaseApiController
 {
     [HttpGet]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
     public async Task<IActionResult> GetAll()
     {
         return HandleResult(await Mediator.Send(new GetAllFactsQuery()));
     }
 
     [HttpGet("{id:int}")]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new GetFactByIdQuery(id)));
@@ -43,12 +47,14 @@ public class FactController : BaseApiController
     }
 
     [HttpPut]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
     public async Task<IActionResult> Update([FromBody] FactForUpdateDto updateRequest)
     {
         return HandleResult(await Mediator.Send(new FactForUpdateCommand(updateRequest)));
     }
 
     [HttpDelete("{id:int}")]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteFactCommand(id)));

@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Streetcode.DAL.Contracts;
 using Streetcode.DAL.Entities.Media.Images;
 
 namespace Streetcode.DAL.Entities.Streetcode.TextContent;
 
 [Table("facts", Schema = "streetcode")]
-public class Fact
+public class Fact : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

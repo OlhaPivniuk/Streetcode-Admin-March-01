@@ -137,6 +137,10 @@
     <value>Cannot find {0} with id: {1}</value>
     <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>
   </data>
+  <data name="RequestDoesNotContainIdParameter" xml:space="preserve">
+    <value>Request to {0} does not contain an id parameter</value>
+    <comment>format: 0 - nameof(EntityClass)</comment>
+  </data>
   <data name="UpdateEntitiesFailed" xml:space="preserve">
     <value>Failed to update the {0}s with {1}Id: {2}</value>
     <comment>format: 0 - nameof(EntityClass), 1 - nameof(EntityClass), 2 - request id</comment>

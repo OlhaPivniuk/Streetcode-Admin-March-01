@@ -24,6 +24,9 @@ using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Serilog.Events;
+using Streetcode.DAL.Contracts;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.BLL.ActionFilters;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -32,6 +35,7 @@ public static class ServiceCollectionExtensions
     public static void AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+        services.AddScoped<IEntityRepositoryBase<Fact>, EntityRepositoryBase<Fact>>();
     }
 
     public static void AddCustomServices(this IServiceCollection services)
@@ -105,6 +109,7 @@ public static class ServiceCollectionExtensions
             opt.MaxAge = TimeSpan.FromDays(30);
         });
 
+        services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddLogging();
         services.AddControllers();
     }

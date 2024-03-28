@@ -106,6 +106,15 @@ namespace Streetcode.BLL.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Request to {0} does not contain an id parameter.
+        /// </summary>
+        public static string RequestDoesNotContainIdParameter {
+            get {
+                return ResourceManager.GetString("RequestDoesNotContainIdParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to update the {0}s with {1}Id: {2}.
         /// </summary>
         public static string UpdateEntitiesFailed {
