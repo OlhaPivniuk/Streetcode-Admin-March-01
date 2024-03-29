@@ -30,13 +30,6 @@ public class GetPartnerByIdHandler : IRequestHandler<GetPartnerByIdQuery, Result
                 include: p => p
                     .Include(pl => pl.PartnerSourceLinks));
 
-        if (partner is null)
-        {
-            string errorMsg = $"Cannot find any partner with corresponding id: {request.Id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
-        }
-
         return Result.Ok(_mapper.Map<PartnerDto>(partner));
     }
 }

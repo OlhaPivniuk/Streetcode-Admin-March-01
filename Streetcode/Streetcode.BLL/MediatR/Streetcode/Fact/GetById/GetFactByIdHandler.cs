@@ -24,19 +24,6 @@ public class GetFactByIdHandler : IRequestHandler<GetFactByIdQuery, Result<FactD
     public async Task<Result<FactDto>> Handle(GetFactByIdQuery request, CancellationToken cancellationToken)
     {
         var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(f => f.Id == request.Id);
-
-        if (fact is null)
-        {
-            string errorMsg = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(Fact),
-                request.Id);
-
-            _logger.LogError(request, errorMsg);
-
-            return Result.Fail(new Error(errorMsg));
-        }
-
         return Result.Ok(_mapper.Map<FactDto>(fact));
     }
 }

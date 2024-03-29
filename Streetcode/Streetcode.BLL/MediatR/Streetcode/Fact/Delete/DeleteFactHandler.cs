@@ -21,19 +21,6 @@ public class DeleteFactHandler : IRequestHandler<DeleteFactCommand, Result<Unit>
     {
         int id = request.Id;
         var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(x => x.Id == id);
-
-        if (fact is null)
-        {
-            string errorMsg = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(Fact),
-                request.Id);
-
-            _logger.LogError(request, errorMsg);
-
-            return Result.Fail(errorMsg);
-        }
-
         _repositoryWrapper.FactRepository.Delete(fact);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;

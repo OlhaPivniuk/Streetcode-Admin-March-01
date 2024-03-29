@@ -24,13 +24,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 
             var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(i => i.Id == request.ImageId);
 
-            if (fact is null)
-            {
-                string error = "Failed to find fact";
-                _logger.LogError(query, error);
-                return Result.Fail(error);
-            }
-
             if (image is not null)
             {
                 fact.ImageId = request.ImageId;

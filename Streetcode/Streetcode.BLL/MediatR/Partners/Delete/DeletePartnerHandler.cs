@@ -23,26 +23,19 @@ namespace Streetcode.BLL.MediatR.Partners.Delete
         public async Task<Result<PartnerDto>> Handle(DeletePartnerQuery request, CancellationToken cancellationToken)
         {
             var partner = await _repositoryWrapper.PartnersRepository.GetFirstOrDefaultAsync(p => p.Id == request.id);
-            if (partner == null)
+            _repositoryWrapper.PartnersRepository.Delete(partner);
+            try
             {
-                const string errorMsg = "No partner with such id";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
+                await _repositoryWrapper.SaveChangesAsync();
+                return Result.Ok(_mapper.Map<PartnerDto>(partner));
             }
-            else
+            catch (Exception ex)
             {
-                _repositoryWrapper.PartnersRepository.Delete(partner);
-                try
-                {
-                    await _repositoryWrapper.SaveChangesAsync();
-                    return Result.Ok(_mapper.Map<PartnerDto>(partner));
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(request, ex.Message);
-                    return Result.Fail(ex.Message);
-                }
+                _logger.LogError(request, ex.Message);
+                return Result.Fail(ex.Message);
             }
+
+            // }
         }
     }
 }
