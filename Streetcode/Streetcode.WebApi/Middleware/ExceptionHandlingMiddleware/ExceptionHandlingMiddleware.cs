@@ -1,5 +1,6 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Streetcode.BLL.Exceptions;
+using ApplicationException = Streetcode.BLL.Exceptions.ApplicationException;
 
 namespace Streetcode.WebApi.Middleware.ExceptionHandlingMiddleware;
 
@@ -24,65 +25,44 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    private static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        var traceId = Guid.NewGuid();
-        LogInfoAboutError(traceId, ex.Message, ex.StackTrace);
-
-        var problemDetails = new ProblemDetails();
-
-        switch (ex)
+        var statusCode = GetStatusCode(exception);
+        var response = new
         {
-            case ValidationException validationException:
-                {
-                    WriteInfoAboutErrorToProblemDetails(
-                        problemDetails,
-                        "Validation error",
-                        StatusCodes.Status400BadRequest,
-                        context.Request.Path,
-                        $"One or more validation errors occured, traceID: {traceId}");
+            title = GetTitle(exception),
+            status = statusCode,
+            detail = exception.Message,
+            errors = GetErrors(exception)
+        };
+        httpContext.Response.ContentType = "application/json";
+        httpContext.Response.StatusCode = statusCode;
+        await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
 
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+    private static int GetStatusCode(Exception exception) =>
+        exception switch
+        {
+            BadRequestException => StatusCodes.Status400BadRequest,
+            NotFoundException => StatusCodes.Status404NotFound,
+            ValidationException => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
+        };
+    private static string GetTitle(Exception exception) =>
+        exception switch
+        {
+            ApplicationException applicationException => applicationException.Title,
+            _ => "Server Error"
+        };
+    private static IReadOnlyDictionary<string, string[]>? GetErrors(Exception exception)
+    {
+        IReadOnlyDictionary<string, string[]>? errors = null;
 
-                    if (validationException.Errors is not null)
-                    {
-                        problemDetails.Extensions["errors"] = validationException.Errors;
-                    }
-
-                    break;
-                }
-
-            default:
-                {
-                    WriteInfoAboutErrorToProblemDetails(
-                        problemDetails,
-                        "Internal Server Error",
-                        StatusCodes.Status500InternalServerError,
-                        context.Request.Path,
-                        $"Internal server error occured, traceID: {traceId}");
-
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-                    break;
-                }
+        if (exception is ValidationException validationException)
+        {
+            errors = validationException.ErrorsDictionary;
         }
-    }
 
-    private static void WriteInfoAboutErrorToProblemDetails(
-        ProblemDetails problemDetails,
-        string errorTitle,
-        int errorStatusCode,
-        string errorInstance,
-        string errorDetail)
-    {
-        problemDetails.Title = errorTitle;
-        problemDetails.Status = errorStatusCode;
-        problemDetails.Instance = errorInstance;
-        problemDetails.Detail = errorDetail;
-    }
-
-    private void LogInfoAboutError(Guid traceId, string message, string? stackTrace)
-    {
-        _logger.LogError($"Error occure while processing the request, TraceID: {traceId}, Message: {message}, StackTrace: {stackTrace}");
+        return errors;
     }
 }
