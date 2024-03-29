@@ -27,6 +27,7 @@ using Serilog.Events;
 using Streetcode.DAL.Contracts;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.ActionFilters;
+using Streetcode.DAL.Entities.Partners;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         services.AddScoped<IEntityRepositoryBase<Fact>, EntityRepositoryBase<Fact>>();
+        services.AddScoped<IEntityRepositoryBase<Partner>, EntityRepositoryBase<Partner>>();
     }
 
     public static void AddCustomServices(this IServiceCollection services)
@@ -110,6 +112,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
+        services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
         services.AddLogging();
         services.AddControllers();
     }
