@@ -13,7 +13,6 @@ namespace Streetcode.WebApi.Controllers.Partners;
 public class PartnersController : BaseApiController
 {
     [HttpGet]
-    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Partner>))]
     public async Task<IActionResult> GetAll()
     {
         return HandleResult(await Mediator.Send(new GetAllPartnersQuery()));

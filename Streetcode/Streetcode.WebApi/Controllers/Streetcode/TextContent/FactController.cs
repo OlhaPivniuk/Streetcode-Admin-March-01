@@ -15,7 +15,6 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 public class FactController : BaseApiController
 {
     [HttpGet]
-    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
     public async Task<IActionResult> GetAll()
     {
         return HandleResult(await Mediator.Send(new GetAllFactsQuery()));
