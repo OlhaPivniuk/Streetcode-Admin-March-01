@@ -76,6 +76,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ReorderFactErrors.resx</DependentUpon>
     </Compile>
+
   </ItemGroup>
 
   <ItemGroup>
@@ -103,6 +104,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ReorderFactErrors.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+
   </ItemGroup>
 
 </Project>
