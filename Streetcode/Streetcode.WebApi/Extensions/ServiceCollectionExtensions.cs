@@ -117,7 +117,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
         services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
-        services.AddScoped<ModelStateFilter<Fact>>();
+        services.AddScoped<ModelStateFilter>();
 
         // services.AddFluentValidationAutoValidation(typeof(CreateFactCommandValidator>)));
         // services.AddMvc(options =>

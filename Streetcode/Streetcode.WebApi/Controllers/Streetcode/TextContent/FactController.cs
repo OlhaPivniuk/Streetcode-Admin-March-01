@@ -40,7 +40,7 @@ public class FactController : BaseApiController
     }
 
     [HttpPost]
-    [ServiceFilter(typeof(ModelStateFilter<Fact>))]
+    [ServiceFilter(typeof(ModelStateFilter))]
 
     public async Task<IActionResult> Create([FromBody] CreateFactDto createRequest)
     {
