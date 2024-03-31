@@ -40,6 +40,8 @@ public class FactController : BaseApiController
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ModelStateFilter<Fact>))]
+
     public async Task<IActionResult> Create([FromBody] CreateFactDto createRequest)
     {
         return HandleResult(await Mediator.Send(new CreateFactCommand(createRequest)));

@@ -28,6 +28,9 @@ using Streetcode.DAL.Contracts;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.ActionFilters;
 using Streetcode.DAL.Entities.Partners;
+using FluentValidation.AspNetCore;
+using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
+using FluentValidation;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -113,6 +116,14 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
+        services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
+        services.AddScoped<ModelStateFilter<Fact>>();
+
+        // services.AddFluentValidationAutoValidation(typeof(CreateFactCommandValidator>)));
+        // services.AddMvc(options =>
+        // {
+        //     options.Filters.Add(new ModelStateFilter<Fact>());
+        // });
         services.AddLogging();
         services.AddControllers();
     }

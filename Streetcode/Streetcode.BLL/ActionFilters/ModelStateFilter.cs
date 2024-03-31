@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Streetcode.BLL.ActionFilters;
 
-public class ModelStateFilter : IActionFilter
+public class ModelStateFilter<T> : IActionFilter
 {
     public void OnActionExecuting(ActionExecutingContext context)
     {
         if (!context.ModelState.IsValid)
         {
-            context.Result = new BadRequestObjectResult(context.ModelState);
+            context.Result = new UnprocessableEntityObjectResult(context.ModelState);
         }
     }
 
