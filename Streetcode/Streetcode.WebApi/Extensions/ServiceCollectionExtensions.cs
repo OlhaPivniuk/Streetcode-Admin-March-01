@@ -120,10 +120,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ModelStateFilter>();
 
         // services.AddFluentValidationAutoValidation(typeof(CreateFactCommandValidator>)));
-        // services.AddMvc(options =>
-        // {
-        //     options.Filters.Add(new ModelStateFilter<Fact>());
-        // });
+        services.AddMvc(options =>
+        {
+            options.Filters.Add(new ModelStateFilter());
+        });
         services.AddLogging();
         services.AddControllers();
     }
