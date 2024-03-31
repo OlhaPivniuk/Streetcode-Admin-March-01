@@ -50,10 +50,7 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 
             if (art is null)
             {
-                string errorMsg = string.Format(
-               ErrorMessages.EntityByStreetCodeIdNotFound,
-               nameof(DAL.Entities.Media.Images.Art),
-               request.StreetcodeId);
+                string errorMsg = $"Cannot find an art with corresponding streetcode id: {request.StreetcodeId}";
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
