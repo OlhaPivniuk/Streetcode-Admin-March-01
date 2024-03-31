@@ -31,6 +31,7 @@ using Streetcode.DAL.Entities.Partners;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using FluentValidation.AspNetCore;
 using FluentValidation;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -117,22 +118,21 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
 
+        // services.AddMvc(options =>
+        // {
+        //     options.Filters.Add(new ModelStateFilter());
+        // })
+        // .AddFluentValidation(options =>
+        // {
+        //     options.RegisterValidatorsFromAssemblyContaining<CreateFactCommandValidator>();
+        // });
+
+        // Instead of above code
         services.AddScoped<ModelStateFilter>();
-
-        // services.AddFluentValidationAutoValidation(typeof(CreateFactCommandValidator>)));
-        services.AddMvc(options =>
-        {
-            // options.Filters.Add(new ModelStateFilter());
-        });
-
-        services.AddFluentValidationAutoValidation();
-
-        // services.AddScoped<IValidator<CreateFactCommand>, CreateFactCommandValidator>();
-
-        // services.AddScoped<IValidator<Fact>, CreateFactCommandValidator>>;
         services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
+
         services.AddLogging();
-        services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateFactCommandValidator>());
+        services.AddControllers();
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
