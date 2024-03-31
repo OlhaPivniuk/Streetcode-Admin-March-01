@@ -129,10 +129,13 @@ public static class ServiceCollectionExtensions
 
         // Instead of above code
         services.AddScoped<ModelStateFilter>();
-        services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
+
+        // services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
 
         services.AddLogging();
-        services.AddControllers();
+        services.AddControllers(x=>x.Filters.Add<ModelStateFilter>());
+        services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<CreateFactCommandValidator>();
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
