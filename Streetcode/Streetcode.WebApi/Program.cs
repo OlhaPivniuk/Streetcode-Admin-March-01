@@ -17,7 +17,7 @@ builder.Services.ConfigureSerilog(builder);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.SuppressModelStateInvalidFilter = true;
+    // options.SuppressModelStateInvalidFilter = true;
 });
 var app = builder.Build();
 

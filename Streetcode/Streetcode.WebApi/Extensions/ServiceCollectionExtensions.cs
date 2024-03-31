@@ -127,11 +127,12 @@ public static class ServiceCollectionExtensions
 
         services.AddFluentValidationAutoValidation();
 
-        // services.AddScoped<IValidator<Fact>, CreateFactCommandValidator>();
+        // services.AddScoped<IValidator<CreateFactCommand>, CreateFactCommandValidator>();
+
         // services.AddScoped<IValidator<Fact>, CreateFactCommandValidator>>;
         services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
         services.AddLogging();
-        services.AddControllers();
+        services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateFactCommandValidator>());
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
