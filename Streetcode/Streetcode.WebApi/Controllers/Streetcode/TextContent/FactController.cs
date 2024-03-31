@@ -39,17 +39,15 @@ public class FactController : BaseApiController
         return HandleResult(await Mediator.Send(new CreateFactCommand(createRequest)));
     }
 
-    [HttpPost]
-    [ServiceFilter(typeof(ModelStateFilter))]
-
-    public async Task<IActionResult> Create([FromBody] CreateFactDto createRequest)
+    [HttpPut]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
+    public async Task<IActionResult> Update([FromBody] UpdateFactDto updateRequest)
     {
         return HandleResult(await Mediator.Send(new UpdateFactCommand(updateRequest)));
     }
 
     [HttpPut]
-    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
-    public async Task<IActionResult> Update([FromBody] FactForUpdateDto updateRequest)
+    public async Task<IActionResult> ReorderFacts([FromBody] ReorderFactRequestDto reorderFactRequestDto)
     {
         return HandleResult(await Mediator.Send(new ReorderFactCommand(reorderFactRequestDto)));
     }
