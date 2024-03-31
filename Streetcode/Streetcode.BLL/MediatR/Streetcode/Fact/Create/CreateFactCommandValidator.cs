@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Streetcode.BLL.Resources.Errors.ValidationErrors;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 
