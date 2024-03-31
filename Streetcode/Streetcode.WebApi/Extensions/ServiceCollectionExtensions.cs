@@ -31,7 +31,6 @@ using Streetcode.DAL.Entities.Partners;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using FluentValidation.AspNetCore;
 using FluentValidation;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -117,22 +116,11 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
-
-        // services.AddMvc(options =>
-        // {
-        //     options.Filters.Add(new ModelStateFilter());
-        // })
-        // .AddFluentValidation(options =>
-        // {
-        //     options.RegisterValidatorsFromAssemblyContaining<CreateFactCommandValidator>();
-        // });
-
-        // Instead of above code
         services.AddScoped<ModelStateFilter>();
-        services.AddValidatorsFromAssemblyContaining(typeof(CreateFactCommandValidator));
-
         services.AddLogging();
-        services.AddControllers();
+        services.AddControllers(x => x.Filters.Add<ModelStateFilter>());
+        services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<CreateFactCommandValidator>();
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
