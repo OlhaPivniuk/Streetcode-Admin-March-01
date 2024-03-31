@@ -5,6 +5,7 @@ using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.GetAll;
@@ -30,7 +31,9 @@ public class GetAllImagesHandler : IRequestHandler<GetAllImagesQuery, Result<IEn
 
         if (images is null)
         {
-            const string errorMsg = $"Cannot find any image";
+            string errorMsg = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Images.Image));
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

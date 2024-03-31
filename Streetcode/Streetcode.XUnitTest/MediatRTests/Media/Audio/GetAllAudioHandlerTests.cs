@@ -8,6 +8,7 @@ using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Audio.GetAll;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -188,7 +189,9 @@ public class GetAllAudioHandlerTests
             _mockBlobService.Object,
             _mockLogger.Object);
 
-        var expectedError = "Cannot find any audios";
+        var expectedError = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Audio));
 
         // Act
         var result = await handler.Handle(new GetAllAudiosQuery(), CancellationToken.None);

@@ -6,6 +6,8 @@ using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources.Errors;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.BLL.MediatR.Media.Art.GetAll;
 
@@ -28,7 +30,9 @@ public class GetAllArtsHandler : IRequestHandler<GetAllArtsQuery, Result<IEnumer
 
         if (arts is null)
         {
-            const string errorMsg = $"Cannot find any arts";
+            string errorMsg = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Images.Art));
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

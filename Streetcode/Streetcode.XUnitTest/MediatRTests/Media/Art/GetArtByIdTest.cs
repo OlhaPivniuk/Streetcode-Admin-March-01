@@ -4,9 +4,11 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -163,7 +165,7 @@ public class GetArtByIdTest
             _mockMapper.Object,
             _mockLogger.Object);
 
-        var expectedMessage = $"Cannot find an art with corresponding id: {id}";
+        var expectedMessage = string.Format(ErrorMessages.EntityByIdNotFound, nameof(DAL.Entities.Media.Images.Art), id);
 
         // Act
         var result = await handler.Handle(new GetArtByIdQuery(id), CancellationToken.None);

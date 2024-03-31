@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
-using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.ResultVariations;

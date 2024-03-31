@@ -10,6 +10,7 @@ using Streetcode.BLL.MediatR.Media.Video.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.Media;
 using Xunit;
+using Streetcode.BLL.Resources.Errors;
 
 public class GetAllVideosHandlerTests
 {
@@ -177,7 +178,9 @@ public class GetAllVideosHandlerTests
             _mockMapper.Object,
             _mockLogger.Object);
 
-        var expectedError = "Cannot find any videos";
+        var expectedError = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Video));
 
         // Act
         var result = await handler.Handle(new GetAllVideosQuery(), CancellationToken.None);

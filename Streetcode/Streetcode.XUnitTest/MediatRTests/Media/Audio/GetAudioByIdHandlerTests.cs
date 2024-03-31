@@ -4,10 +4,12 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Audio.GetById;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -173,7 +175,10 @@ public class GetAudioByIdHandlerTests
             _mockBlobService.Object,
             _mockLogger.Object);
 
-        var expectedMessage = $"Cannot find an audio with corresponding id: {id}";
+        var expectedMessage = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(DAL.Entities.Media.Audio),
+                id);
 
         // Act
         var result = await handler.Handle(new GetAudioByIdQuery(id), CancellationToken.None);

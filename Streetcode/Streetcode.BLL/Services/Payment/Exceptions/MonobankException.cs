@@ -1,7 +1,7 @@
 ﻿namespace Streetcode.BLL.Services.Payment.Exceptions
 {
     /// <summary>
-    /// Represents abstract class for all errors occured during <see cref="Monobank"/> execution
+    /// Represents abstract class for all errors occured during <see cref="Monobank"/> execution.
     /// </summary>
     public abstract class MonobankException : Exception
     {

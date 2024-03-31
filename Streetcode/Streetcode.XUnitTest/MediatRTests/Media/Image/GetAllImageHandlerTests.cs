@@ -8,6 +8,7 @@ using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.GetAll;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -188,7 +189,9 @@ public class GetAllImageHandlerTests
             _mockBlobService.Object,
             _mockLogger.Object);
 
-        var expectedError = "Cannot find any image";
+        var expectedError = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Images.Image));
 
         // Act
         var result = await handler.Handle(new GetAllImagesQuery(), CancellationToken.None);

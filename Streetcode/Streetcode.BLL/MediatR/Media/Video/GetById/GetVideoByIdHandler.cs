@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Video.GetById;
@@ -26,7 +27,10 @@ public class GetVideoByIdHandler : IRequestHandler<GetVideoByIdQuery, Result<Vid
 
         if (video is null)
         {
-            string errorMsg = $"Cannot find a video with corresponding id: {request.Id}";
+            string errorMsg = string.Format(
+               ErrorMessages.EntityByIdNotFound,
+               nameof(DAL.Entities.Media.Video),
+               request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

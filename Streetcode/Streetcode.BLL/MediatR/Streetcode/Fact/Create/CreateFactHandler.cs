@@ -3,6 +3,9 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
+using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
@@ -64,7 +67,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 
         private Result<CreateFactDto> ImageNotFoundError(CreateFactDto request)
         {
-            var errorMsg = string.Format(Resources.Errors.CannotFindEntityErrors.CannotFindImageById, request.ImageId);
+            string errorMsg = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(Image),
+                request.ImageId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }
@@ -79,7 +85,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 
         private Result<CreateFactDto> StreetcodeNotFoundError(CreateFactDto request)
         {
-            var errorMsg = string.Format(Resources.Errors.CannotFindEntityErrors.CannotFindStreetcodeById, request.StreetcodeId);
+            string errorMsg = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(StreetcodeContent),
+                request.StreetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }
@@ -91,7 +100,9 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 
         private Result<CreateFactDto> FailedToCreateFactError(CreateFactDto request)
         {
-            var errorMsg = string.Format(Resources.Errors.CannotCreateEntityErrors.CannotCreateFact);
+            string errorMsg = string.Format(
+                ErrorMessages.CreateFailed,
+                nameof(Fact));
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }

@@ -4,10 +4,12 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.GetById;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -173,7 +175,10 @@ public class GetImageByIdHandlerTests
             _mockBlobService.Object,
             _mockLogger.Object);
 
-        var expectedMessage = $"Cannot find a image with corresponding id: {id}";
+        var expectedMessage = string.Format(
+               ErrorMessages.EntityByIdNotFound,
+               nameof(DAL.Entities.Media.Images.Image),
+               id);
 
         // Act
         var result = await handler.Handle(new GetImageByIdQuery(id), CancellationToken.None);

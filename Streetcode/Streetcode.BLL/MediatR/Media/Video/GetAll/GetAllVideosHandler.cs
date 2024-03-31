@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Video.GetAll;
@@ -28,7 +27,9 @@ public class GetAllVideosHandler : IRequestHandler<GetAllVideosQuery, Result<IEn
 
         if (videos is null)
         {
-            const string errorMsg = "Cannot find any videos";
+            string errorMsg = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Video));
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

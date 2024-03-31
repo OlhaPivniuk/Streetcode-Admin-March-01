@@ -8,8 +8,10 @@ using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetAll;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -179,7 +181,9 @@ public class GetAllArtTest
             _mockMapper.Object,
             _mockLogger.Object);
 
-        var expectedError = "Cannot find any arts";
+        var expectedError = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Images.Art));
 
         // Act
         var result = await handler.Handle(new GetAllArtsQuery(), CancellationToken.None);

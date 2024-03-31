@@ -118,8 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CreateFailed" xml:space="preserve">
-    <value>Failed to create the {0} with id: {1}</value>
-    <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>
+    <value>Failed to create a {0}</value>
+    <comment>format: 0 - nameof(EntityClass)</comment>
   </data>
   <data name="DeleteFailed" xml:space="preserve">
     <value>Failed to delete the {0} with id: {1}</value>
@@ -132,6 +132,10 @@
   <data name="EntitiesNotFound" xml:space="preserve">
     <value>Cannot find any {0}s</value>
     <comment>format: 0 - nameof(EntityClass)</comment>
+  </data>
+  <data name="EntityByCategoryIdNotFound" xml:space="preserve">
+    <value>Cannot find {0} with categoryId: {1}</value>
+    <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>
   </data>
   <data name="EntityByIdNotFound" xml:space="preserve">
     <value>Cannot find {0} with id: {1}</value>

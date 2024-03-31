@@ -4,6 +4,7 @@ using MediatR;
 using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetById;
@@ -29,7 +30,10 @@ public class GetAudioByIdHandler : IRequestHandler<GetAudioByIdQuery, Result<Aud
 
         if (audio is null)
         {
-            string errorMsg = $"Cannot find an audio with corresponding id: {request.Id}";
+            string errorMsg = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(DAL.Entities.Media.Audio),
+                request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

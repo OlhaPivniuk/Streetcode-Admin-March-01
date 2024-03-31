@@ -6,6 +6,7 @@ using Streetcode.BLL.Dto.Media;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources.Errors;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetAll;
 
@@ -30,7 +31,9 @@ public class GetAllAudiosHandler : IRequestHandler<GetAllAudiosQuery, Result<IEn
 
         if (audios is null)
         {
-            const string errorMsg = "Cannot find any audios";
+            string errorMsg = string.Format(
+                ErrorMessages.EntitiesNotFound,
+                nameof(DAL.Entities.Media.Audio));
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

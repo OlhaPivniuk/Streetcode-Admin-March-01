@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Media.Audio.Delete;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.Delete;
@@ -30,7 +30,10 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
 
         if (image is null)
         {
-            string errorMsg = $"Cannot find an image with corresponding categoryId: {request.Id}";
+            string errorMsg = string.Format(
+                ErrorMessages.EntityByCategoryIdNotFound,
+                nameof(DAL.Entities.Media.Images.Image),
+                request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -50,7 +53,9 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
         }
         else
         {
-            const string errorMsg = $"Failed to delete an image";
+            string errorMsg = string.Format(
+                ErrorMessages.DeleteFailed,
+                nameof(DAL.Entities.Media.Images.Image));
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

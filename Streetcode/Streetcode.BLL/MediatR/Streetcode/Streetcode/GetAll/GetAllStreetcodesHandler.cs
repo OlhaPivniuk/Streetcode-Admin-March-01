@@ -13,13 +13,11 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
 
-    public GetAllStreetcodesHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+    public GetAllStreetcodesHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task<Result<GetAllStreetcodesResponseDto>> Handle(GetAllStreetcodesQuery query, CancellationToken cancellationToken)
@@ -91,7 +89,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         var sortColumn = sort.Trim();
         var sortDirection = "asc";
 
-        if (sortColumn.StartsWith("-"))
+        if (sortColumn.StartsWith('-'))
         {
             sortDirection = "desc";
             sortColumn = sortColumn.Substring(1);

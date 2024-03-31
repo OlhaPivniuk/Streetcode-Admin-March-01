@@ -46,16 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\Errors\CannotCreateEntityErrors.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CannotCreateEntityErrors.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Errors\CannotFindEntityErrors.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CannotFindEntityErrors.resx</DependentUpon>
-    </Compile>
     <Compile Update="Resources\Errors\CannotUpdateEntityErrors.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -66,11 +56,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Errors\ValidationErrors\Fact\CreateFactErrors.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CreateFactErrors.resx</DependentUpon>
-    </Compile>
     <Compile Update="Resources\Errors\ValidationErrors\Fact\ReorderFactErrors.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -79,14 +64,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\Errors\CannotCreateEntityErrors.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CannotCreateEntityErrors.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Errors\CannotFindEntityErrors.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>CannotFindEntityErrors.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors\CannotUpdateEntityErrors.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CannotUpdateEntityErrors.Designer.cs</LastGenOutput>
@@ -94,10 +71,6 @@
     <EmbeddedResource Update="Resources\Errors\ErrorMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Errors\ValidationErrors\Fact\CreateFactErrors.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>CreateFactErrors.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors\ValidationErrors\Fact\ReorderFactErrors.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

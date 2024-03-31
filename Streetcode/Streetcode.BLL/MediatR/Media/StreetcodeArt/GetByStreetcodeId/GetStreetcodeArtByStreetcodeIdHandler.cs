@@ -6,6 +6,7 @@ using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
@@ -49,7 +50,10 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 
             if (art is null)
             {
-                string errorMsg = $"Cannot find an art with corresponding streetcode id: {request.StreetcodeId}";
+                string errorMsg = string.Format(
+               ErrorMessages.EntityByStreetCodeIdNotFound,
+               nameof(DAL.Entities.Media.Images.Art),
+               request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

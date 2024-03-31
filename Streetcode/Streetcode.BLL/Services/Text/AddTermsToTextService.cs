@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,7 +11,7 @@ namespace Streetcode.BLL.Services.Text
     public class AddTermsToTextService : ITextService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private List<int> _buffer;
+        private readonly List<int> _buffer;
 
         private readonly StringBuilder _text = new StringBuilder();
 

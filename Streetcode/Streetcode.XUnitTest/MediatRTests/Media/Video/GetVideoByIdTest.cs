@@ -4,9 +4,11 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Video.GetById;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -163,7 +165,10 @@ public class GetVideoByIdTest
             _mockMapper.Object,
             _mockLogger.Object);
 
-        var expectedMessage = $"Cannot find a video with corresponding id: {id}";
+        var expectedMessage = string.Format(
+               ErrorMessages.EntityByIdNotFound,
+               nameof(DAL.Entities.Media.Video),
+               id);
 
         // Act
         var result = await handler.Handle(new GetVideoByIdQuery(id), CancellationToken.None);
