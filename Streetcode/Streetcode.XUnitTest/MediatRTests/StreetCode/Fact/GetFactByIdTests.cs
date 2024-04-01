@@ -18,14 +18,12 @@ public class GetFactByIdTests
     private readonly Mock<ILoggerService> _mockLogger;
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<IMapper> _mockMapper;
-    private readonly Mock<IEntityRepositoryBase<Fact>> _mockEntityRepositoryBase;
 
     public GetFactByIdTests()
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockMapper = new Mock<IMapper>();
         _mockLogger = new Mock<ILoggerService>();
-        _mockEntityRepositoryBase = new Mock<IEntityRepositoryBase<Fact>>();
     }
 
     [Theory]
