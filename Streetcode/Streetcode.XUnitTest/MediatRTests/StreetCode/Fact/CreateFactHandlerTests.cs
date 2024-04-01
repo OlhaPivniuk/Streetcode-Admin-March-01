@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Create;
+
+using System.Linq.Expressions;
 using AutoMapper;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
@@ -13,187 +15,184 @@ using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Media.Images;
 
-using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using FactEntity = DAL.Entities.Streetcode.TextContent.Fact;
 
-namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Create
+public class CreateFactHandlerTests
 {
-    public class CreateFactHandlerTests
+    private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
+    private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<ILoggerService> _mockLogger;
+
+    public CreateFactHandlerTests()
     {
-        private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly Mock<ILoggerService> _mockLogger;
+        _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
+        _mockMapper = new Mock<IMapper>();
+        _mockLogger = new Mock<ILoggerService>();
+    }
 
-        public CreateFactHandlerTests()
+    [Fact]
+    public async Task Handle_ValidCreateFactCommand_WithExistingImageAndStreetcode_ShouldSucceed()
+    {
+        // Arrange
+        var request = GetValidCreateFactRequest();
+        SetupMock(request);
+        var handler = CreateHandler();
+        var command = new CreateFactCommand(request);
+        var cancellationToken = CancellationToken.None;
+
+        // Act
+        var result = await handler.Handle(command, cancellationToken);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Handle_InvalidCreateFactCommand_WithNonexistentImage_ShouldReturnSingleError()
+    {
+        // Arrange
+        var request = GetImageNotExistCreateFactRequest();
+        var expectedErrorMessage = string.Format(
+            ErrorMessages.EntityByIdNotFound,
+            nameof(Image),
+            -1);
+        SetupMock(request);
+        var handler = CreateHandler();
+        var command = new CreateFactCommand(request);
+        var cancellationToken = CancellationToken.None;
+
+        // Act
+        var result = await handler.Handle(command, cancellationToken);
+
+        // Assert
+        result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
+    }
+
+    [Fact]
+    public async Task Handle_InvalidCreateFactCommand_WithNonexistentStreetcode_ShouldReturnSingleError()
+    {
+        // Arrange
+        var request = GetStreetcodeNotExistCreateFactRequest();
+        string expectedErrorMessage = string.Format(
+            ErrorMessages.EntityByIdNotFound,
+            nameof(StreetcodeContent),
+            request.StreetcodeId);
+        SetupMock(request);
+        var handler = CreateHandler();
+        var command = new CreateFactCommand(request);
+        var cancellationToken = CancellationToken.None;
+
+        // Act
+        var result = await handler.Handle(command, cancellationToken);
+
+        // Assert
+        result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
+    }
+
+    [Fact]
+    public async Task Handle_AnyCreateFactCommand_WithAnyImageAndAnyStreetcode_ShouldReturnResultOfCorrectType()
+    {
+        // Arrange
+        var request = GetValidCreateFactRequest();
+        var expectedType = typeof(Result<CreateFactDto>);
+        SetupMock(request);
+        var handler = CreateHandler();
+        var command = new CreateFactCommand(request);
+        var cancellationToken = CancellationToken.None;
+
+        // Act
+        var result = await handler.Handle(command, cancellationToken);
+
+        // Assert
+        result.Should().BeOfType(expectedType);
+    }
+
+    private CreateFactHandler CreateHandler()
+    {
+        return new CreateFactHandler(
+            repository: _mockRepositoryWrapper.Object,
+            mapper: _mockMapper.Object,
+            logger: _mockLogger.Object);
+    }
+
+    private void SetupMock(CreateFactDto request)
+    {
+        var image = request.ImageId switch
         {
-            _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            _mockMapper = new Mock<IMapper>();
-            _mockLogger = new Mock<ILoggerService>();
-        }
+            1 => new Image { Id = request.ImageId },
+            _ => null,
+        };
 
-        [Fact]
-        public async Task Handle_ValidCreateFactCommand_WithExistingImageAndStreetcode_ShouldSucceed()
+        var streetcode = request.StreetcodeId switch
         {
-            // Arrange
-            var request = GetValidCreateFactRequest();
-            SetupMock(request);
-            var handler = CreateHandler();
-            var command = new CreateFactCommand(request);
-            var cancellationToken = CancellationToken.None;
+            1 => new StreetcodeContent { Id = request.StreetcodeId },
+            _ => null,
+        };
 
-            // Act
-            var result = await handler.Handle(command, cancellationToken);
-
-            // Assert
-            result.IsSuccess.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task Handle_InvalidCreateFactCommand_WithNonexistentImage_ShouldReturnSingleError()
+        var factEntity = new FactEntity
         {
-            // Arrange
-            var request = GetImageNotExistCreateFactRequest();
-            var expectedErrorMessage = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(Image),
-                -1);
-            SetupMock(request);
-            var handler = CreateHandler();
-            var command = new CreateFactCommand(request);
-            var cancellationToken = CancellationToken.None;
+            Id = 1,
+        };
 
-            // Act
-            var result = await handler.Handle(command, cancellationToken);
+        _mockRepositoryWrapper
+            .Setup(r => r.ImageRepository.GetFirstOrDefaultAsync(
+                AnyEntityPredicate<Image>(),
+                AnyEntityInclude<Image>()))
+            .ReturnsAsync(image);
 
-            // Assert
-            result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
-        }
+        _mockRepositoryWrapper
+            .Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
+                AnyEntityPredicate<StreetcodeContent>(),
+                AnyEntityInclude<StreetcodeContent>()))
+            .ReturnsAsync(streetcode);
 
-        [Fact]
-        public async Task Handle_InvalidCreateFactCommand_WithNonexistentStreetcode_ShouldReturnSingleError()
-        {
-            // Arrange
-            var request = GetStreetcodeNotExistCreateFactRequest();
-            string expectedErrorMessage = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(StreetcodeContent),
-                request.StreetcodeId);
-            SetupMock(request);
-            var handler = CreateHandler();
-            var command = new CreateFactCommand(request);
-            var cancellationToken = CancellationToken.None;
+        _mockRepositoryWrapper
+            .Setup(r => r.FactRepository.Create(It.IsAny<FactEntity>()))
+            .Returns(factEntity);
 
-            // Act
-            var result = await handler.Handle(command, cancellationToken);
+        _mockRepositoryWrapper
+            .Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
 
-            // Assert
-            result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
-        }
+        _mockMapper
+            .Setup(m => m.Map<FactEntity>(It.Is<object>(obj => obj is CreateFactDto)))
+            .Returns(factEntity);
+    }
 
-        [Fact]
-        public async Task Handle_AnyCreateFactCommand_WithAnyImageAndAnyStreetcode_ShouldReturnResultOfCorrectType()
-        {
-            // Arrange
-            var request = GetValidCreateFactRequest();
-            var expectedType = typeof(Result<CreateFactDto>);
-            SetupMock(request);
-            var handler = CreateHandler();
-            var command = new CreateFactCommand(request);
-            var cancellationToken = CancellationToken.None;
+    private static CreateFactDto GetValidCreateFactRequest()
+    {
+        return new CreateFactDto(
+            Title: "Title1",
+            FactContent: "Fact content 1",
+            ImageId: 1,
+            StreetcodeId: 1);
+    }
 
-            // Act
-            var result = await handler.Handle(command, cancellationToken);
+    private static CreateFactDto GetImageNotExistCreateFactRequest()
+    {
+        return new CreateFactDto(
+            Title: "Title2",
+            FactContent: "Fact content 2",
+            ImageId: -1,
+            StreetcodeId: 1);
+    }
 
-            // Assert
-            result.Should().BeOfType(expectedType);
-        }
+    private static CreateFactDto GetStreetcodeNotExistCreateFactRequest()
+    {
+        return new CreateFactDto(
+            Title: "Title3",
+            FactContent: "Fact content 3",
+            ImageId: 1,
+            StreetcodeId: -1);
+    }
 
-        private CreateFactHandler CreateHandler()
-        {
-            return new CreateFactHandler(
-                repository: _mockRepositoryWrapper.Object,
-                mapper: _mockMapper.Object,
-                logger: _mockLogger.Object);
-        }
+    private static Expression<Func<TEntity, bool>> AnyEntityPredicate<TEntity>()
+    {
+        return It.IsAny<Expression<Func<TEntity, bool>>>();
+    }
 
-        private void SetupMock(CreateFactDto request)
-        {
-            var image = request.ImageId switch
-            {
-                1 => new Image { Id = request.ImageId },
-                _ => null,
-            };
-
-            var streetcode = request.StreetcodeId switch
-            {
-                1 => new StreetcodeContent { Id = request.StreetcodeId },
-                _ => null,
-            };
-
-            var factEntity = new FactEntity
-            {
-                Id = 1,
-            };
-
-            _mockRepositoryWrapper
-                .Setup(r => r.ImageRepository.GetFirstOrDefaultAsync(
-                    AnyEntityPredicate<Image>(),
-                    AnyEntityInclude<Image>()))
-                .ReturnsAsync(image);
-
-            _mockRepositoryWrapper
-                .Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
-                    AnyEntityPredicate<StreetcodeContent>(),
-                    AnyEntityInclude<StreetcodeContent>()))
-                .ReturnsAsync(streetcode);
-
-            _mockRepositoryWrapper
-                .Setup(r => r.FactRepository.Create(It.IsAny<FactEntity>()))
-                .Returns(factEntity);
-
-            _mockRepositoryWrapper
-                .Setup(r => r.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            _mockMapper
-                .Setup(m => m.Map<FactEntity>(It.Is<object>(obj => obj is CreateFactDto)))
-                .Returns(factEntity);
-        }
-
-        private static CreateFactDto GetValidCreateFactRequest()
-        {
-            return new CreateFactDto(
-                Title: "Title1",
-                FactContent: "Fact content 1",
-                ImageId: 1,
-                StreetcodeId: 1);
-        }
-
-        private static CreateFactDto GetImageNotExistCreateFactRequest()
-        {
-            return new CreateFactDto(
-                Title: "Title2",
-                FactContent: "Fact content 2",
-                ImageId: -1,
-                StreetcodeId: 1);
-        }
-
-        private static CreateFactDto GetStreetcodeNotExistCreateFactRequest()
-        {
-            return new CreateFactDto(
-                Title: "Title3",
-                FactContent: "Fact content 3",
-                ImageId: 1,
-                StreetcodeId: -1);
-        }
-
-        private static Expression<Func<TEntity, bool>> AnyEntityPredicate<TEntity>()
-        {
-            return It.IsAny<Expression<Func<TEntity, bool>>>();
-        }
-
-        private static Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> AnyEntityInclude<TEntity>()
-        {
-            return It.IsAny<Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>>();
-        }
+    private static Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> AnyEntityInclude<TEntity>()
+    {
+        return It.IsAny<Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>>();
     }
 }
