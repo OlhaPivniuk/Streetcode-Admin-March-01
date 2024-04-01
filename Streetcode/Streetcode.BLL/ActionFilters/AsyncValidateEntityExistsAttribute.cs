@@ -24,8 +24,8 @@ public class AsyncValidateEntityExistsAttribute<T> : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        const int UNEXISTEDID= -1;
-        int id = UNEXISTEDID;
+        const int INEXISTEDID= -1;
+        int id = INEXISTEDID;
 
         if (context.ActionArguments.ContainsKey("id"))
         {
@@ -41,7 +41,7 @@ public class AsyncValidateEntityExistsAttribute<T> : IAsyncActionFilter
             }
         }
 
-        if (id == UNEXISTEDID)
+        if (id == INEXISTEDID)
         {
             var errorMsg = string.Format(ErrorMessages.RequestDoesNotContainIdParameter, typeof(T).Name);
             _logger.LogError(context, errorMsg);
