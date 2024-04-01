@@ -117,7 +117,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AsyncValidateEntityExistsAttribute<Fact>>();
         services.AddScoped<AsyncValidateEntityExistsAttribute<Partner>>();
         services.AddScoped<ModelStateFilter>();
-
         services.AddLogging();
         services.AddControllers(x => x.Filters.Add<ModelStateFilter>());
         services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
