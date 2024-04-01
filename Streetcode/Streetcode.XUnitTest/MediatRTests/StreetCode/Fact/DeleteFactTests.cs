@@ -103,7 +103,7 @@ public class DeleteFactTests
 
         var handler = new DeleteFactHandler(_mockRepositoryWrapper.Object, _mockLogger.Object);
         var expectedErrorMessage = string.Format(
-            ErrorMessages.EntityByIdNotFound,
+            ErrorMessages.DeleteFailed,
             nameof(Fact),
             id);
 

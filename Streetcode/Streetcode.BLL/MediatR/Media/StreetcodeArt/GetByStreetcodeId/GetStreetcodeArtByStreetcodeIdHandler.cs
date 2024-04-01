@@ -11,7 +11,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 {
-  public class GetStreetcodeArtByStreetcodeIdHandler : IRequestHandler<GetStreetcodeArtByStreetcodeIdQuery, Result<IEnumerable<StreetcodeArtDto>>>
+    public class GetStreetcodeArtByStreetcodeIdHandler : IRequestHandler<GetStreetcodeArtByStreetcodeIdQuery, Result<IEnumerable<StreetcodeArtDto>>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -46,13 +46,16 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
                 predicate: s => s.StreetcodeId == request.StreetcodeId,
                 include: art => art
                     .Include(a => a.Art)
-                    .Include(i => i.Art.Image) !);
+                    .Include(i => i.Art.Image)!);
 
             if (art is null)
             {
-                string errorMsg = $"Cannot find an art with corresponding streetcode id: {request.StreetcodeId}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+               string errorMsg = string.Format(
+               ErrorMessages.EntityByStreetCodeIdNotFound,
+               nameof(DAL.Entities.Media.Images.Art),
+               request.StreetcodeId);
+               _logger.LogError(request, errorMsg);
+               return Result.Fail(new Error(errorMsg));
             }
 
             var artsDto = _mapper.Map<IEnumerable<StreetcodeArtDto>>(art);

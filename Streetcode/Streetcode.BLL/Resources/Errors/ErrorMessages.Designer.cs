@@ -115,6 +115,15 @@ namespace Streetcode.BLL.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find {0} with streetcode id: {1}.
+        /// </summary>
+        public static string EntityByStreetCodeIdNotFound {
+            get {
+                return ResourceManager.GetString("EntityByStreetCodeIdNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Request to {0} does not contain an id parameter.
         /// </summary>
         public static string RequestDoesNotContainIdParameter {

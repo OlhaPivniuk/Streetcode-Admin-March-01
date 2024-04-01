@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Contracts;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.ActionFilters;
@@ -47,12 +48,16 @@ public class AsyncValidateEntityExistsAttribute<T> : IAsyncActionFilter
             return;
         }
 
-        var entity = await _repositoryBase.GetSingleOrDefaultAsync(x => x.Id.Equals(id));
+        var entity = await _repositoryBase.GetFirstOrDefaultAsync(x => x.Id.Equals(id));
 
         if (entity == null)
         {
             string errorMessageType = GetErrorMessage(context.HttpContext.Request.Method);
             var errorMsg = string.Format(errorMessageType, typeof(T).Name, id);
+            var expectedMessage = string.Format(
+            ErrorMessages.EntityByIdNotFound,
+            nameof(Fact),
+            id);
             _logger.LogError(context, errorMsg);
             context.Result = new NotFoundObjectResult(errorMsg);
             return;
