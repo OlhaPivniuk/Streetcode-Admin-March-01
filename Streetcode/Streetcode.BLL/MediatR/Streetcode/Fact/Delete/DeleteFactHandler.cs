@@ -1,26 +1,33 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete;
 
 public class DeleteFactHandler : IRequestHandler<DeleteFactCommand, Result<Unit>>
 {
+    private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public DeleteFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    public DeleteFactHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger, IHttpContextAccessor httpContext)
     {
         _repositoryWrapper = repositoryWrapper;
+        _mapper = mapper;
         _logger = logger;
+        _httpContext = httpContext;
     }
 
     public async Task<Result<Unit>> Handle(DeleteFactCommand request, CancellationToken cancellationToken)
     {
         int id = request.Id;
-        var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+        var fact = (FactEntity)_httpContext.HttpContext!.Items["entity"] !;
         _repositoryWrapper.FactRepository.Delete(fact);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;

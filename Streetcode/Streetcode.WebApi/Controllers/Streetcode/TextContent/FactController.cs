@@ -9,6 +9,7 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.ActionFilters;
+using Streetcode.DAL.Entities.Media.Images;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -41,6 +42,7 @@ public class FactController : BaseApiController
 
     [HttpPut]
     [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Fact>))]
+    [ServiceFilter(typeof(AsyncValidateEntityExistsAttribute<Image>))]
     public async Task<IActionResult> Update([FromBody] UpdateFactDto updateRequest)
     {
         return HandleResult(await Mediator.Send(new UpdateFactCommand(updateRequest)));

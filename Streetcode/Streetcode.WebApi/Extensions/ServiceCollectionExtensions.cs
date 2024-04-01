@@ -119,6 +119,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ModelStateFilter>();
         services.AddLogging();
         services.AddControllers(x => x.Filters.Add<ModelStateFilter>());
+        services.AddHttpContextAccessor();
         services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
         services.AddValidatorsFromAssemblyContaining<CreateFactDtoValidator>();
     }
