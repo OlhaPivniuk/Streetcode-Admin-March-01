@@ -24,12 +24,12 @@ public class AsyncValidateEntityExistsAttribute<T> : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        const int INEXISTEDID= -1;
+        const int INEXISTEDID = -1;
         int id = INEXISTEDID;
 
         if (context.ActionArguments.ContainsKey("id"))
         {
-            id = (int)context.ActionArguments["id"] !;
+            id = (int)context.ActionArguments["id"]!;
         }
         else
         {
