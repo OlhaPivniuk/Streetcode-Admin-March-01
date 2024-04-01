@@ -5,6 +5,8 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.Media.Images;
+using Microsoft.AspNetCore.Http;
+using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 {
@@ -12,18 +14,19 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
-        public UpdateFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        private readonly IHttpContextAccessor _httpContext;
+
+        public UpdateFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger, IHttpContextAccessor httpContext)
         {
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
+            _httpContext= httpContext;
         }
 
         public async Task<Result<UpdateFactDto>> Handle(UpdateFactCommand query, CancellationToken cancellationToken)
         {
             var request = query.UpdateRequest;
-
-            var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(x => x.Id == request.Id);
-
+            var fact = (FactEntity)_httpContext.HttpContext!.Items["entity"] !;
             var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(i => i.Id == request.ImageId);
 
             if (image is not null)

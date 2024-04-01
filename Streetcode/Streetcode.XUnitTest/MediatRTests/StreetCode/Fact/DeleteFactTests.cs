@@ -9,15 +9,21 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
 using Streetcode.BLL.Resources.Errors;
+using Microsoft.AspNetCore.Http;
+using AutoMapper;
 
 public class DeleteFactTests
 {
+    private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<ILoggerService> _mockLogger;
+    private readonly Mock<IHttpContextAccessor> _mockHttpContext;
 
     public DeleteFactTests()
     {
-        _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
+        _mockRepositoryWrapper= new Mock<IRepositoryWrapper>();
+        _mockMapper= new Mock<IMapper>();
+        _mockHttpContext = new Mock<IHttpContextAccessor>();
         _mockLogger = new Mock<ILoggerService>();
     }
 
@@ -28,7 +34,7 @@ public class DeleteFactTests
         // Arrange
         MockRepositoryWrapperSetupWithExistingFactId(id);
 
-        var handler = new DeleteFactHandler(_mockRepositoryWrapper.Object, _mockLogger.Object);
+        var handler = new DeleteFactHandler(_mockRepositoryWrapper.Object,_mockMapper.Object,  _mockLogger.Object, _mockHttpContext.Object);
 
         // Act
         var result = await handler.Handle(new DeleteFactCommand(id), CancellationToken.None);

@@ -1,29 +1,22 @@
 ﻿namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact;
 
-using System.Linq.Expressions;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Xunit;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.BLL.Resources.Errors;
-using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 
 public class GetFactByIdTests
 {
-    private readonly Mock<ILoggerService> _mockLogger;
-    private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<IHttpContextAccessor> _mockHttpContext;
 
     public GetFactByIdTests()
     {
-        _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockMapper = new Mock<IMapper>();
-        _mockLogger = new Mock<ILoggerService>();
+        _mockHttpContext = new Mock<IHttpContextAccessor>();
     }
 
     [Theory]
@@ -31,13 +24,12 @@ public class GetFactByIdTests
     public async Task GetFactById_ShouldReturnOk_IfIdExists(int id)
     {
         // Arrange
-        MockRepositorySetupReturnsFact(id);
+        MockHttpContextSetupReturnsFact(id);
         MockMapperSetup(id);
 
         var handler = new GetFactByIdHandler(
-            _mockRepositoryWrapper.Object,
             _mockMapper.Object,
-            _mockLogger.Object);
+            _mockHttpContext.Object);
 
         // Act
         var result = await handler.Handle(new GetFactByIdQuery(id), CancellationToken.None);
@@ -48,28 +40,23 @@ public class GetFactByIdTests
 
     [Theory]
     [InlineData(1)]
-    public async Task GetFactById_RepositoryShouldCallGetFirstOrDefaultAsyncOnlyOnce_IfFactExists(int id)
+    public async Task GetFactById_RepositoryShouldCallHttpContextItemsOnlyOnce_IfFactExists(int id)
     {
         // Arrange
-        MockRepositorySetupReturnsFact(id);
+        MockHttpContextSetupReturnsFact(id);
         MockMapperSetup(id);
 
         var handler = new GetFactByIdHandler(
-            _mockRepositoryWrapper.Object,
             _mockMapper.Object,
-            _mockLogger.Object);
+            _mockHttpContext.Object);
 
         // Act
         await handler.Handle(new GetFactByIdQuery(id), CancellationToken.None);
 
         // Assert
-        _mockRepositoryWrapper.Verify(
-            repo =>
-            repo.FactRepository.GetFirstOrDefaultAsync(
-               It.IsAny<Expression<Func<Fact, bool>>>(),
-               It.IsAny<Func<IQueryable<Fact>,
-               IIncludableQueryable<Fact, object>>>()),
-            Times.Once);
+        _mockHttpContext.Verify(
+            x =>
+            x.HttpContext!.Items["entity"], Times.Once);
     }
 
     [Theory]
@@ -77,13 +64,12 @@ public class GetFactByIdTests
     public async Task GetFactById_MapperShouldCallMapOnlyOnce_IfFactExists(int id)
     {
         // Arrange
-        MockRepositorySetupReturnsFact(id);
+        MockHttpContextSetupReturnsFact(id);
         MockMapperSetup(id);
 
         var handler = new GetFactByIdHandler(
-            _mockRepositoryWrapper.Object,
             _mockMapper.Object,
-            _mockLogger.Object);
+            _mockHttpContext.Object);
 
         // Act
         await handler.Handle(new GetFactByIdQuery(id), CancellationToken.None);
@@ -99,13 +85,12 @@ public class GetFactByIdTests
     public async Task GetFactById_ShouldReturnFactWithCorrectId_IfFactExists(int id)
     {
         // Arrange
-        MockRepositorySetupReturnsFact(id);
+        MockHttpContextSetupReturnsFact(id);
         MockMapperSetup(id);
 
         var handler = new GetFactByIdHandler(
-            _mockRepositoryWrapper.Object,
             _mockMapper.Object,
-            _mockLogger.Object);
+            _mockHttpContext.Object);
 
         // Act
         var result = await handler.Handle(new GetFactByIdQuery(id), CancellationToken.None);
@@ -119,13 +104,12 @@ public class GetFactByIdTests
     public async Task GetFactById_ShouldReturnFactDto_IfFactExists(int id)
     {
         // Arrange
-        MockRepositorySetupReturnsFact(id);
+        MockHttpContextSetupReturnsFact(id);
         MockMapperSetup(id);
 
         var handler = new GetFactByIdHandler(
-            _mockRepositoryWrapper.Object,
             _mockMapper.Object,
-            _mockLogger.Object);
+            _mockHttpContext.Object);
 
         // Act
         var result = await handler.Handle(new GetFactByIdQuery(id), CancellationToken.None);
@@ -171,6 +155,16 @@ public class GetFactByIdTests
     //     Assert.Equal(expectedMessage, actualMessage);
     // }
 
+    private void MockHttpContextSetupReturnsFact(int id)
+    {
+        _mockHttpContext.Setup(x => x.HttpContext!.Items["entity"]).Returns(new Fact { Id = id });
+    }
+
+    private void MockHttpContextSetupReturnsNull(int id)
+    {
+        _mockHttpContext.Setup(x => x.HttpContext!.Items["entity"]).Returns(null);
+    }
+
     private void MockMapperSetup(int id)
     {
         _mockMapper.Setup(x => x
@@ -182,25 +176,5 @@ public class GetFactByIdTests
                 FactContent: "Fact content 1",
                 ImageId: 1,
                 StreetcodeId: 1));
-    }
-
-    private void MockRepositorySetupReturnsFact(int id)
-    {
-        _mockRepositoryWrapper.Setup(x => x.FactRepository
-            .GetFirstOrDefaultAsync(
-               It.IsAny<Expression<Func<Fact, bool>>>(),
-               It.IsAny<Func<IQueryable<Fact>,
-               IIncludableQueryable<Fact, object>>>()))
-            .ReturnsAsync(new Fact { Id = id });
-    }
-
-    private void MockRepositorySetupReturnsNull()
-    {
-        _mockRepositoryWrapper.Setup(x => x.FactRepository
-            .GetFirstOrDefaultAsync(
-               It.IsAny<Expression<Func<Fact, bool>>>(),
-               It.IsAny<Func<IQueryable<Fact>,
-               IIncludableQueryable<Fact, object>>>()))
-            .ReturnsAsync((Fact?)null);
     }
 }
