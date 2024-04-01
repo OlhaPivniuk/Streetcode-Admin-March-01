@@ -4,12 +4,12 @@ using Streetcode.BLL.Resources.Errors.ValidationErrors;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 
-public class CreateFactCommandValidator : AbstractValidator<CreateFactDto>
+public class CreateFactDtoValidator : AbstractValidator<CreateFactDto>
 {
     private readonly int _maxTitleLength;
     private readonly int _maxFactContentLength;
 
-    public CreateFactCommandValidator()
+    public CreateFactDtoValidator()
     {
         _maxTitleLength = 68;
         _maxFactContentLength = 600;

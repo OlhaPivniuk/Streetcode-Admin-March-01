@@ -120,7 +120,7 @@ public static class ServiceCollectionExtensions
         services.AddLogging();
         services.AddControllers(x => x.Filters.Add<ModelStateFilter>());
         services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
-        services.AddValidatorsFromAssemblyContaining<CreateFactCommandValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateFactDtoValidator>();
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
