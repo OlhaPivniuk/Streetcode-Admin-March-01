@@ -43,7 +43,7 @@ public class AsyncValidateEntityExistsFilter<T> : IAsyncActionFilter
                 T iEntity = _mapper.Map<T>(args);
                 if (iEntity is IEntity e)
                 {
-                    id = e.Id;
+                    id = e.Id <= 0 ? INEXISTENTID : e.Id;
                 }
             }
             catch (AutoMapperMappingException exception)

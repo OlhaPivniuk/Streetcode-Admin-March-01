@@ -48,6 +48,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             }
 
             FactEntity factEntity = _mapper.Map<FactEntity>(request);
+            factEntity.Number = fact.Number;
 
             _repositoryWrapper.FactRepository.Update(factEntity);
 
