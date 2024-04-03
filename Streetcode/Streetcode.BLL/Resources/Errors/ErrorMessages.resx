@@ -141,6 +141,14 @@
     <value>Cannot find {0} with streetcode id: {1}</value>
     <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>
   </data>
+  <data name="IncorrectEntity" xml:space="preserve">
+    <value>The returned object is not a {0}</value>
+    <comment>format: 0 - nameof(EntityClass)</comment>
+  </data>
+  <data name="NotAppropriateRequestType" xml:space="preserve">
+    <value>Not appropriate Request type for {0} with id={1}</value>
+    <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>
+  </data>
   <data name="UpdateFailed" xml:space="preserve">
     <value>Failed to update the {0} with id: {1}</value>
     <comment>format: 0 - nameof(EntityClass), 1 - request id</comment>

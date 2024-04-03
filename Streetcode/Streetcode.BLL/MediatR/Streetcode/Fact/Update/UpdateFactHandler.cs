@@ -1,10 +1,15 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Constants;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources.Errors;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 {
@@ -12,70 +17,110 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
-        public UpdateFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        private readonly IHttpContextAccessor _httpContext;
+        private readonly IMapper _mapper;
+
+        public UpdateFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger, IHttpContextAccessor httpContext, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
+            _httpContext = httpContext;
+            _mapper = mapper;
         }
 
-        public async Task<Result<UpdateFactDto>> Handle(UpdateFactCommand query, CancellationToken cancellationToken)
+        public async Task<Result<UpdateFactDto>> Handle(UpdateFactCommand command, CancellationToken cancellationToken)
         {
-            var request = query.UpdateRequest;
+            UpdateFactDto request = command.UpdateRequest;
 
-            var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(x => x.Id == request.Id);
-
-            var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(i => i.Id == request.ImageId);
-
-            if (fact is null)
+            if (_httpContext.HttpContext!.Items[GeneralConstants.ENTITY] is not FactEntity fact)
             {
-                string errorMsg = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(Fact),
-                request.Id);
-                _logger.LogError(query, errorMsg);
-                return Result.Fail(errorMsg);
+                return FactNotFoundError(request);
             }
 
-            if (image is not null)
+            if (!await IsImageExistAsync(request.ImageId))
             {
-                fact.ImageId = request.ImageId;
-            }
-            else
-            {
-                string errorMsg = string.Format(
-                ErrorMessages.EntityByIdNotFound,
-                nameof(Image),
-                request.ImageId);
-                _logger.LogError(query, errorMsg);
-                return Result.Fail(errorMsg);
+                return ImageNotFoundError(request);
             }
 
-            if (request.Title is not null)
+            if (!await IsStreetcodeExistAsync(request.StreetcodeId))
             {
-                fact.Title = request.Title;
+                return StreetcodeNotFoundError(request);
             }
 
-            if (request.FactContent is not null)
-            {
-                fact.FactContent = request.FactContent;
-            }
+            FactEntity factEntity = _mapper.Map<FactEntity>(request);
 
-            _repositoryWrapper.FactRepository.Update(fact);
+            _repositoryWrapper.FactRepository.Update(factEntity);
 
-            var isSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
+            bool isSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
             if (!isSuccess)
             {
-                string errorMsg = string.Format(
-                ErrorMessages.UpdateFailed,
-                nameof(Fact),
-                request.ImageId);
-
-                _logger.LogError(query, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                return UpdateFailedError(request);
             }
 
-            return Result.Ok(request);
+            return Result.Ok(_mapper.Map<UpdateFactDto>(factEntity));
+        }
+
+        private Result<UpdateFactDto> FactNotFoundError(UpdateFactDto request)
+        {
+            string errorMessage = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(FactEntity),
+                request.Id);
+
+            _logger.LogError(request, errorMessage);
+
+            return Result.Fail(errorMessage);
+        }
+
+        private async Task<bool> IsImageExistAsync(int imageId)
+        {
+            var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(i => i.Id == imageId);
+
+            return image is not null;
+        }
+
+        private Result<UpdateFactDto> ImageNotFoundError(UpdateFactDto request)
+        {
+            string errorMessage = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(Image),
+                request.ImageId);
+
+            _logger.LogError(request, errorMessage);
+
+            return Result.Fail(errorMessage);
+        }
+
+        private async Task<bool> IsStreetcodeExistAsync(int streetcodeId)
+        {
+            var streetcode = await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == streetcodeId);
+
+            return streetcode is not null;
+        }
+
+        private Result<UpdateFactDto> StreetcodeNotFoundError(UpdateFactDto request)
+        {
+            string errorMessage = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(StreetcodeContent),
+                request.StreetcodeId);
+
+            _logger.LogError(request, errorMessage);
+
+            return Result.Fail(errorMessage);
+        }
+
+        private Result<UpdateFactDto> UpdateFailedError(UpdateFactDto request)
+        {
+            string errorMessage = string.Format(
+                ErrorMessages.UpdateFailed,
+                nameof(FactEntity),
+                request.Id);
+
+            _logger.LogError(request, errorMessage);
+
+            return Result.Fail(errorMessage);
         }
     }
 }

@@ -115,6 +115,24 @@ namespace Streetcode.BLL.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The returned object is not a {0}.
+        /// </summary>
+        public static string IncorrectEntity {
+            get {
+                return ResourceManager.GetString("IncorrectEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not appropriate Request type for {0} with id={1}.
+        /// </summary>
+        public static string NotAppropriateRequestType {
+            get {
+                return ResourceManager.GetString("NotAppropriateRequestType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to update the {0} with id: {1}.
         /// </summary>
         public static string UpdateFailed {

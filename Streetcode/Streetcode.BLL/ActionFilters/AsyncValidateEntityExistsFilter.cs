@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Contracts;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.BLL.Constants;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using AutoMapper;
 
 namespace Streetcode.BLL.ActionFilters;
 
@@ -13,31 +14,46 @@ public class AsyncValidateEntityExistsFilter<T> : IAsyncActionFilter
 {
     private readonly IEntityRepositoryBase<T> _repositoryBase;
     private readonly ILoggerService _logger;
-    public AsyncValidateEntityExistsFilter(IEntityRepositoryBase<T> repositoryBase, ILoggerService logger)
+    private readonly IMapper _mapper;
+
+    public AsyncValidateEntityExistsFilter(IEntityRepositoryBase<T> repositoryBase, ILoggerService logger, IMapper mapper)
     {
         _repositoryBase = repositoryBase;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        const int INEXISTEDID = -1;
-        int id = INEXISTEDID;
+        const int INEXISTENTID = -1;
+        int id = INEXISTENTID;
 
-        if (context.ActionArguments.ContainsKey("id"))
+        if (context.ActionArguments.ContainsKey(GeneralConstants.ID))
         {
-            id = (int)context.ActionArguments["id"] !;
+            if (context.ActionArguments[GeneralConstants.ID] is int i)
+            {
+                id = i;
+            }
         }
         else
         {
             var args = context.ActionArguments.FirstOrDefault().Value;
-            if (args is IEntity e)
+            try
             {
-                id = e.Id;
+                T iEntity = _mapper.Map<T>(args);
+                if (iEntity is IEntity e)
+                {
+                    id = e.Id;
+                }
+            }
+            catch (AutoMapperMappingException exception)
+            {
+                // this is an expected mapping exception, just continue working
+                _logger.LogError(context, string.Format("{0} is an expected mapping exception, just continue working", exception.GetType().Name));
             }
         }
 
-        if (id != INEXISTEDID)
+        if (id != INEXISTENTID)
         {
             var entity = await _repositoryBase.GetFirstOrDefaultAsync(e => e.Id.Equals(id));
 
@@ -51,7 +67,7 @@ public class AsyncValidateEntityExistsFilter<T> : IAsyncActionFilter
             }
             else
             {
-                context.HttpContext.Items.Add("entity", entity);
+                context.HttpContext.Items.Add(GeneralConstants.ENTITY, entity);
             }
         }
 
@@ -63,6 +79,6 @@ public class AsyncValidateEntityExistsFilter<T> : IAsyncActionFilter
         "GET" => ErrorMessages.EntityByIdNotFound,
         "PUT" => ErrorMessages.UpdateFailed,
         "DELETE" => ErrorMessages.DeleteFailed,
-        _ => "Not appropriate Request type for {0} with id={1}"
+        _ => ErrorMessages.NotAppropriateRequestType
     };
 }
