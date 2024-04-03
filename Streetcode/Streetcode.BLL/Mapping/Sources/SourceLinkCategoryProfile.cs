@@ -27,6 +27,6 @@ public class SourceLinkCategoryProfile : Profile
         CreateMap<CreateCategoryRequestDto, SourceLinkCategory>();
 
         CreateMap<SourceLinkCategory, SourceLinkCategoryDto>()
-            .ForMember(dest => dest.StreetcodeCategoryContents, opt => opt.MapFrom(src => src.StreetcodeCategoryContents[0]));
+            .ForMember(dest => dest.StreetcodeCategoryContents, opt => opt.MapFrom(src => src.StreetcodeCategoryContents.FirstOrDefault()));
     }
 }
