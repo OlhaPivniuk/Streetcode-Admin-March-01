@@ -3,7 +3,7 @@ using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.MediatR.Media.Art.Create;
 using Xunit;
 
-namespace Streetcode.XUnitTest.ValidationTests;
+namespace Streetcode.XUnitTest.ValidationTests.Media.Art;
 
 public class CreateArtValidatorTests
 {
