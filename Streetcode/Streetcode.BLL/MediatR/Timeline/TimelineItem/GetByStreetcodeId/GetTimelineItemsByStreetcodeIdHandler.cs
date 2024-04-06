@@ -2,10 +2,11 @@ using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Timeline;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.GetByStreetcodeId;
 
@@ -33,8 +34,12 @@ public class GetTimelineItemsByStreetcodeIdHandler : IRequestHandler<GetTimeline
 
         if (timelineItems is null)
         {
-            string errorMsg = $"Cannot find any timeline item by the streetcode id: {request.StreetcodeId}";
+            string errorMsg = string.Format(
+                ErrorMessages.EntityByStreetCodeIdNotFound,
+                typeof(TimelineItemEntity).Name,
+                request.StreetcodeId);
             _logger.LogError(request, errorMsg);
+
             return Result.Fail(new Error(errorMsg));
         }
 
