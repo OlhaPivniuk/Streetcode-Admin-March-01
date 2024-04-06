@@ -2,10 +2,10 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Dto.Partners;
 using Streetcode.BLL.Dto.Team;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Partners.GetById;
+using Streetcode.BLL.Resources.Errors;
+using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Team.GetById
@@ -34,8 +34,13 @@ namespace Streetcode.BLL.MediatR.Team.GetById
 
             if (team is null)
             {
-                string errorMsg = $"Cannot find any team with corresponding id: {request.Id}";
+                string errorMsg = string.Format(
+                ErrorMessages.EntityByIdNotFound,
+                nameof(TeamMember),
+                request.Id);
+
                 _logger.LogError(request, errorMsg);
+
                 return Result.Fail(new Error(errorMsg));
             }
 
