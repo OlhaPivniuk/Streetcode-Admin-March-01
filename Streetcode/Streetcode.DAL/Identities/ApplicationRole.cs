@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Streetcode.BLL.Identities;
+namespace Streetcode.DAL.Identities;
 
 public class ApplicationRole : IdentityRole<int>
 {

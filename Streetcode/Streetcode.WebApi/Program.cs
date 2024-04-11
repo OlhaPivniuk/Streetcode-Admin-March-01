@@ -1,6 +1,10 @@
 using Hangfire;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.DAL.Identities;
+using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.Utils;
@@ -20,6 +24,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+builder.Services
+    .AddIdentity<ApplicationUser, ApplicationRole>()
+    .AddEntityFrameworkStores<StreetcodeDbContext>()
+    .AddDefaultTokenProviders()
+    .AddUserStore<UserStore<ApplicationUser, ApplicationRole, StreetcodeDbContext, int>>()
+    .AddRoleStore<RoleStore<ApplicationRole, StreetcodeDbContext, int>>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
