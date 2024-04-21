@@ -3,7 +3,6 @@ using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
@@ -23,7 +22,6 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
-using Serilog.Events;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Streetcode.BLL.ActionFilters;
@@ -31,6 +29,7 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Entities.AdditionalContent.Jwt;
 using Streetcode.BLL.Services.Users;
+using Microsoft.Extensions.Options;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -42,7 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEntityRepositoryBase<Fact>, EntityRepositoryBase<Fact>>();
     }
 
-    public static void AddCustomServices(this IServiceCollection services)
+    public static void AddCustomServices(this IServiceCollection services, IHostEnvironment hostEnvironment)
     {
         services.AddRepositoryServices();
         services.AddFeatureManagement();
@@ -50,7 +49,20 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
-        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobService>(sp =>
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
+            var logger = sp.GetRequiredService<ILoggerService>();
+            var repo = sp.GetRequiredService<IRepositoryWrapper>();
+            if (environment == "IntegrationTests" || environment == "Local")
+            {
+                var options = sp.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
+                return new BlobService(options, logger, repo);
+            }
+
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            return new AzureBlobService(configuration, logger, repo);
+        });
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();

@@ -1,4 +1,5 @@
 using Hangfire;
+using Streetcode.BLL.Interfaces.BlobStorage;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ builder.Host.ConfigureApplication();
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerServices();
-builder.Services.AddCustomServices();
+builder.Services.AddCustomServices(builder.Environment);
 builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
@@ -90,7 +91,7 @@ using (var scope = app.Services.CreateScope())
     scope.ServiceProvider.SeedAdmin(builder).Wait();
 }
 
-await app.SeedDataAsync(); // uncomment for seeding data in local
+// await app.SeedDataAsync(); // uncomment for seeding data in local
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -106,8 +107,8 @@ if (app.Environment.EnvironmentName != "Local")
     wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
     RecurringJob.AddOrUpdate<WebParsingUtils>(
         wp => wp.ParseZipFileFromWebAsync(), Cron.Monthly);
-    RecurringJob.AddOrUpdate<BlobService>(
-        b => b.CleanBlobStorage(), Cron.Monthly);
+    RecurringJob.AddOrUpdate<IBlobService>(
+        b => b.CleanBlobStorageAsync(CancellationToken.None), Cron.Monthly);
 }
 
 app.MapControllers();

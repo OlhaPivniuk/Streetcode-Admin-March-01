@@ -30,10 +30,11 @@ public class CreateImageHandler : IRequestHandler<CreateImageCommand, Result<Ima
 
     public async Task<Result<ImageDto>> Handle(CreateImageCommand request, CancellationToken cancellationToken)
     {
-        string hashBlobStorageName = _blobService.SaveFileInStorage(
+        string hashBlobStorageName = await _blobService.SaveFileInStorageAsync(
             request.Image.BaseFormat,
             request.Image.Title,
-            request.Image.Extension);
+            request.Image.Extension!,
+            cancellationToken);
 
         var image = _mapper.Map<DAL.Entities.Media.Images.Image>(request.Image);
 
@@ -44,7 +45,7 @@ public class CreateImageHandler : IRequestHandler<CreateImageCommand, Result<Ima
 
         var createdImage = _mapper.Map<ImageDto>(image);
 
-        createdImage.Base64 = _blobService.FindFileInStorageAsBase64(createdImage.BlobName);
+        createdImage.Base64 = await _blobService.FindFileInStorageAsBase64Async(createdImage.BlobName!, cancellationToken);
 
         if(resultIsSuccess)
         {
