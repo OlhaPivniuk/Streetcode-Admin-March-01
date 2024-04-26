@@ -1,4 +1,5 @@
 using AutoMapper;
+using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.DTO.Media.Video;
 using Streetcode.DAL.Entities.Media;
 
@@ -8,6 +9,9 @@ public class VideoProfile : Profile
 {
     public VideoProfile()
     {
-        CreateMap<Video, VideoDTO>();
+        CreateMap<Video, VideoDto>().ReverseMap();
+        CreateMap<CreateVideoRequestDto, Video>().ReverseMap();
+        CreateMap<UpdateVideoRequestDto, Video>();
+        CreateMap<Video, UpdateVideoResponseDto>();
     }
 }

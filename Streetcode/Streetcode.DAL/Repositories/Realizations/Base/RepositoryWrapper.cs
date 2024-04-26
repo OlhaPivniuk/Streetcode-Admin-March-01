@@ -14,7 +14,6 @@ using Streetcode.DAL.Repositories.Interfaces.Team;
 using Streetcode.DAL.Repositories.Interfaces.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Transactions;
-using Streetcode.DAL.Repositories.Interfaces.Users;
 using Streetcode.DAL.Repositories.Realizations.AdditionalContent;
 using Streetcode.DAL.Repositories.Realizations.Analytics;
 using Streetcode.DAL.Repositories.Realizations.Media;
@@ -28,7 +27,6 @@ using Streetcode.DAL.Repositories.Realizations.Team;
 using Streetcode.DAL.Repositories.Realizations.Timeline;
 using Streetcode.DAL.Repositories.Realizations.Toponyms;
 using Streetcode.DAL.Repositories.Realizations.Transactions;
-using Streetcode.DAL.Repositories.Realizations.Users;
 
 namespace Streetcode.DAL.Repositories.Realizations.Base;
 
@@ -87,8 +85,6 @@ public class RepositoryWrapper : IRepositoryWrapper
     private IHistoricalContextRepository _historyContextRepository;
 
     private IPartnerSourceLinkRepository _partnerSourceLinkRepository;
-
-    private IUserRepository _userRepository;
 
     private IStreetcodeTagIndexRepository _streetcodeTagIndexRepository;
 
@@ -449,19 +445,6 @@ public class RepositoryWrapper : IRepositoryWrapper
         }
     }
 
-    public IUserRepository UserRepository
-    {
-        get
-        {
-            if (_userRepository is null)
-            {
-                _userRepository = new UserRepository(_streetcodeDbContext);
-            }
-
-            return _userRepository;
-        }
-    }
-
     public IStreetcodeTagIndexRepository StreetcodeTagIndexRepository
     {
         get
@@ -554,11 +537,6 @@ public class RepositoryWrapper : IRepositoryWrapper
 			return _streetcodeImageRepository;
 		}
 	}
-
-    public int SaveChanges()
-    {
-        return _streetcodeDbContext.SaveChanges();
-    }
 
     public async Task<int> SaveChangesAsync()
     {

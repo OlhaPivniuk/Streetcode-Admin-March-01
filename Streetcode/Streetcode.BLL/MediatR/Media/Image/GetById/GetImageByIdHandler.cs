@@ -2,14 +2,15 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.GetById;
 
-public class GetImageByIdHandler : IRequestHandler<GetImageByIdQuery, Result<ImageDTO>>
+public class GetImageByIdHandler : IRequestHandler<GetImageByIdQuery, Result<ImageDto>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -24,7 +25,7 @@ public class GetImageByIdHandler : IRequestHandler<GetImageByIdQuery, Result<Ima
         _logger = logger;
     }
 
-    public async Task<Result<ImageDTO>> Handle(GetImageByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ImageDto>> Handle(GetImageByIdQuery request, CancellationToken cancellationToken)
     {
         var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(
             f => f.Id == request.Id,
@@ -32,12 +33,15 @@ public class GetImageByIdHandler : IRequestHandler<GetImageByIdQuery, Result<Ima
 
         if (image is null)
         {
-            string errorMsg = $"Cannot find a image with corresponding id: {request.Id}";
+            string errorMsg = string.Format(
+               ErrorMessages.EntityByIdNotFound,
+               nameof(DAL.Entities.Media.Images.Image),
+               request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
-        var imageDto = _mapper.Map<ImageDTO>(image);
+        var imageDto = _mapper.Map<ImageDto>(image);
         if(imageDto.BlobName != null)
         {
             imageDto.Base64 = _blobService.FindFileInStorageAsBase64(image.BlobName);

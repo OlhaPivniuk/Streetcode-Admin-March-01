@@ -1,8 +1,7 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
-using Streetcode.DAL.Persistence;
 
 namespace Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -13,13 +12,11 @@ public interface IRepositoryBase<T>
 
     T Create(T entity);
 
-    Task<T> CreateAsync(T entity);
-
-    Task CreateRangeAsync(IEnumerable<T> items);
+    void CreateRange(IEnumerable<T> items);
 
     EntityEntry<T> Update(T entity);
 
-    public void UpdateRange(IEnumerable<T> items);
+    void UpdateRange(IEnumerable<T> items);
 
     void Delete(T entity);
 
@@ -35,7 +32,7 @@ public interface IRepositoryBase<T>
 
     IQueryable<T> Include(params Expression<Func<T, object>>[] includes);
 
-    Task<IEnumerable<T>> GetAllAsync(
+    Task<IEnumerable<T>?> GetAllAsync(
         Expression<Func<T, bool>>? predicate = default,
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default);
 
@@ -56,4 +53,7 @@ public interface IRepositoryBase<T>
         Expression<Func<T, T>> selector,
         Expression<Func<T, bool>>? predicate = default,
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default);
+
+    Task<T?> GetItemBySpecAsync(ISpecification<T> spec);
+    Task<IEnumerable<T>?> GetItemsBySpecAsync(ISpecification<T> spec);
 }

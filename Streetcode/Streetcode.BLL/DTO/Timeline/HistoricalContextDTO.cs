@@ -1,7 +1,10 @@
-namespace Streetcode.BLL.DTO.Timeline;
+using System.ComponentModel.DataAnnotations;
 
-public class HistoricalContextDTO
+namespace Streetcode.BLL.Dto.Timeline;
+
+public class HistoricalContextDto
 {
     public int Id { get; set; }
-    public string Title { get; set; }
+    [MaxLength(50)]
+    public string Title { get; set; } = string.Empty;
 }

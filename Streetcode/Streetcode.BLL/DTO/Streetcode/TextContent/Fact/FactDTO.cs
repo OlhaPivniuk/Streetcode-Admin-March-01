@@ -1,9 +1,3 @@
-namespace Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+namespace Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 
-public class FactDto
-{
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public int ImageId { get; set; }
-    public string FactContent { get; set; }
-}
+public sealed record FactDto(int Id, int Number, string Title, string FactContent, int ImageId, int StreetcodeId);

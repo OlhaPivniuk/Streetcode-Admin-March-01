@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Users
+namespace Streetcode.BLL.Dto.Users
 {
     public class RefreshTokenResponce
     {

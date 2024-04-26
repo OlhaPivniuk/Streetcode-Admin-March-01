@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Dto.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Partners.Update
 {
-    public class UpdatePartnerHandler : IRequestHandler<UpdatePartnerQuery, Result<PartnerDTO>>
+    public class UpdatePartnerHandler : IRequestHandler<UpdatePartnerQuery, Result<PartnerDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -21,7 +21,7 @@ namespace Streetcode.BLL.MediatR.Partners.Update
             _logger = logger;
         }
 
-        public async Task<Result<PartnerDTO>> Handle(UpdatePartnerQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PartnerDto>> Handle(UpdatePartnerQuery request, CancellationToken cancellationToken)
         {
             var partner = _mapper.Map<Partner>(request.Partner);
 
@@ -42,7 +42,7 @@ namespace Streetcode.BLL.MediatR.Partners.Update
 
                 partner.Streetcodes.Clear();
                 _repositoryWrapper.PartnersRepository.Update(partner);
-                _repositoryWrapper.SaveChanges();
+                await _repositoryWrapper.SaveChangesAsync();
                 var newStreetcodeIds = request.Partner.Streetcodes.Select(s => s.Id).ToList();
                 var oldStreetcodes = await _repositoryWrapper.PartnerStreetcodeRepository
                     .GetAllAsync(ps => ps.PartnerId == partner.Id);
@@ -64,8 +64,8 @@ namespace Streetcode.BLL.MediatR.Partners.Update
                     }
                 }
 
-                _repositoryWrapper.SaveChanges();
-                var dbo = _mapper.Map<PartnerDTO>(partner);
+                await _repositoryWrapper.SaveChangesAsync();
+                var dbo = _mapper.Map<PartnerDto>(partner);
                 dbo.Streetcodes = request.Partner.Streetcodes;
                 return Result.Ok(dbo);
             }

@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Streetcode.BLL.Interfaces.BlobStorage;
+using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
@@ -17,7 +19,7 @@ using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Realizations.Base;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -31,8 +33,9 @@ namespace Streetcode.WebApi.Extensions
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
                 string blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath");
-                var repo = new RepositoryWrapper(dbContext);
-                var blobService = new BlobService(blobOptions, repo);
+                var repo = app.Services.GetRequiredService<IRepositoryWrapper>();
+                var logger = app.Services.GetRequiredService<ILoggerService>();
+                var blobService = app.Services.GetRequiredService<IBlobService>();
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
                 if (!dbContext.Images.Any())
@@ -47,7 +50,7 @@ namespace Streetcode.WebApi.Extensions
                         string filePath = Path.Combine(blobPath, img.BlobName);
                         if (!File.Exists(filePath))
                         {
-                            blobService.SaveFileInStorageBase64(img.Base64, img.BlobName.Split('.')[0], img.BlobName.Split('.')[1]);
+                            blobService.SaveFileInStorage(img.Base64, img.BlobName.Split('.')[0], img.BlobName.Split('.')[1]);
                         }
                     }
 
@@ -56,7 +59,7 @@ namespace Streetcode.WebApi.Extensions
                         string filePath = Path.Combine(blobPath, audio.BlobName);
                         if (!File.Exists(filePath))
                         {
-                            blobService.SaveFileInStorageBase64(audio.Base64, audio.BlobName.Split('.')[0], audio.BlobName.Split('.')[1]);
+                            blobService.SaveFileInStorage(audio.Base64, audio.BlobName.Split('.')[0], audio.BlobName.Split('.')[1]);
                         }
                     }
 
@@ -265,22 +268,6 @@ namespace Streetcode.WebApi.Extensions
                                 await dbContext.SaveChangesAsync();
                             }
                         }
-                    }
-
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
-                            });
-
-                        await dbContext.SaveChangesAsync();
                     }
 
                     if (!dbContext.News.Any())

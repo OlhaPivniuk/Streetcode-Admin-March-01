@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
+using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.MediatR.AdditionalContent.GetById;
 using Streetcode.BLL.MediatR.AdditionalContent.Subtitle.GetAll;
 using Streetcode.BLL.MediatR.AdditionalContent.Subtitle.GetByStreetcodeId;
 
 namespace Streetcode.WebApi.Controllers.AdditionalContent;
 
+[AllowAnonymous]
 public class SubtitleController : BaseApiController
 {
     [HttpGet]

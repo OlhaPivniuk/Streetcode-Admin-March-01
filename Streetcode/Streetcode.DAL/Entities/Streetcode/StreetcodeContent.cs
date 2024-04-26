@@ -57,6 +57,8 @@ public class StreetcodeContent
     public DateTime EventStartOrPersonBirthDate { get; set; }
 
     public DateTime? EventEndOrPersonDeathDate { get; set; }
+    public string? InstagramARLink { get; set; }
+    public string? InvolvedPeople { get; set; }
 
     public int? AudioId { get; set; }
 

@@ -1,4 +1,4 @@
-<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/project-studying-dotnet/Streetcode-Admin-March/blob/main/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
+<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/project-studying-dotnet/Streetcode-Admin-March-01/blob/main/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
 
 # Streetcode
 This is a Back-end part of our Streetcode project.
@@ -9,15 +9,15 @@ Front-end part: https://github.com/project-studying-dotnet/Streetcode_Client-Adm
 >### **Mission**
 >To fill the gaps in the historical memory of Ukrainians.
 
-[![Github Issues](https://img.shields.io/github/issues/project-studying-dotnet/Streetcode-Admin-March?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Admin-March/issues)
-[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/project-studying-dotnet/Streetcode-Admin-March?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Admin-March/pulls)
+[![Github Issues](https://img.shields.io/github/issues/project-studying-dotnet/Streetcode-Admin-March-01?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Admin-March-01/issues)
+[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/project-studying-dotnet/Streetcode-Admin-March-01?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Admin-March-01/pulls)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=coverage)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=bugs)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=coverage)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=bugs)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Admin-March-01&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Admin-March-01)
 ---
 
 ## Table of Contents 
@@ -69,11 +69,11 @@ api.secret=${API_SECRET}
 ### Clone
   Clone this repo to your local machine using:
   ```
-https://github.com/project-studying-dotnet/Streetcode-Admin-March
+https://github.com/project-studying-dotnet/Streetcode-Admin-March-01
   ```
   Or if your have an associated SSH key:
   ```
-git@github.com:project-studying-dotnet/Streetcode-Admin-March.git
+git@github.com:project-studying-dotnet/Streetcode-Admin-March-01.git
   ```
 
 ### Setup
@@ -174,7 +174,7 @@ For example, `fix typo` or `increase rate limit`. Note: you don't need to commit
 
 #### Step 6
 
-- 🔃 Create a new pull request using <a href="https://github.com/project-studying-dotnet/Streetcode-Admin-March.git" target="_blank">*this link*</a>.
+- 🔃 Create a new pull request using <a href="https://github.com/project-studying-dotnet/Streetcode-Admin-March-01.git" target="_blank">*this link*</a>.
 
 #### Step 7
 

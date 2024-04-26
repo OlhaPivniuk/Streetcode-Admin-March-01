@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
+using Streetcode.BLL.Resources.Errors;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+
+using TermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Term;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Term.GetAll
 {
-    public class GetAllTermsHandler : IRequestHandler<GetAllTermsQuery, Result<IEnumerable<TermDTO>>>
+    public class GetAllTermsHandler : IRequestHandler<GetAllTermsQuery, Result<IEnumerable<TermDto>>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -22,18 +23,18 @@ namespace Streetcode.BLL.MediatR.Streetcode.Term.GetAll
             _logger = logger;
         }
 
-        public async Task<Result<IEnumerable<TermDTO>>> Handle(GetAllTermsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<TermDto>>> Handle(GetAllTermsQuery request, CancellationToken cancellationToken)
         {
             var terms = await _repositoryWrapper.TermRepository.GetAllAsync();
 
             if (terms is null)
             {
-                const string errorMsg = $"Cannot find any term";
+                string errorMsg = string.Format(ErrorMessages.EntitiesNotFound, typeof(TermEntity).Name);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
-            return Result.Ok(_mapper.Map<IEnumerable<TermDTO>>(terms));
+            return Result.Ok(_mapper.Map<IEnumerable<TermDto>>(terms));
         }
     }
 }

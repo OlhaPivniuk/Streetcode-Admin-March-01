@@ -1,9 +1,7 @@
-using System.Text;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
@@ -23,7 +21,13 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
-using Serilog.Events;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using Streetcode.BLL.ActionFilters;
+using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Entities.AdditionalContent.Jwt;
+using Streetcode.BLL.Services.Users;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -32,6 +36,7 @@ public static class ServiceCollectionExtensions
     public static void AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+        services.AddScoped<IEntityRepositoryBase<Fact>, EntityRepositoryBase<Fact>>();
     }
 
     public static void AddCustomServices(this IServiceCollection services)
@@ -42,19 +47,50 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
-        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobService, AzureBlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<ITokenService, TokenService>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        string connectionString;
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
+        if (environment == "IntegrationTests" || environment == "Local")
+        {
+            var connection = configuration.GetSection(environment).GetConnectionString("DefaultConnection");
+            connectionString = connection ?? throw new InvalidOperationException($"'DefaultConnection' is null or not found for the '{environment}' environment.");
+        }
+        else
+        {
+            var connection = configuration.GetConnectionString("DefaultConnection");
+            connectionString = connection ?? throw new InvalidOperationException("'DefaultConnection' is null or not found");
+        }
+
         var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-        services.AddSingleton(emailConfig);
+
+        if (emailConfig is not null)
+        {
+            services.AddSingleton(emailConfig);
+        }
+
+        var jwtConfig = configuration.GetSection("Jwt").Get<JwtConfiguration>();
+
+        if (jwtConfig is not null)
+        {
+            services.AddSingleton(jwtConfig);
+        }
+
+        var refreshTokenConfig = configuration.GetSection("RefreshToken").Get<RefreshTokenConfiguration>();
+
+        if (refreshTokenConfig is not null)
+        {
+            services.AddSingleton(refreshTokenConfig);
+        }
 
         services.AddDbContext<StreetcodeDbContext>(options =>
         {
@@ -90,8 +126,15 @@ public static class ServiceCollectionExtensions
             opt.MaxAge = TimeSpan.FromDays(30);
         });
 
+        services.AddScoped<ModelStateFilter>();
+        services.AddScoped<AsyncValidateEntityExistsFilter<Fact>>();
         services.AddLogging();
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ModelStateFilter>();
+        });
+        services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<CreateFactDtoValidator>();
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
@@ -100,7 +143,33 @@ public static class ServiceCollectionExtensions
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
+
             opt.CustomSchemaIds(x => x.FullName);
+
+            opt.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = JwtBearerDefaults.AuthenticationScheme
+            });
+
+            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme,
+                        },
+                        Scheme = JwtBearerDefaults.AuthenticationScheme,
+                        In = ParameterLocation.Header
+                    },
+                    new List<string>()
+                }
+            });
         });
     }
 

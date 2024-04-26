@@ -1,14 +1,14 @@
 using System.Linq.Expressions;
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
-using MimeKit;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.DAL.Repositories.Realizations.Base;
 
-public abstract class RepositoryBase<T> : IRepositoryBase<T>
+public abstract class RepositoryBase<T> : Interfaces.Base.IRepositoryBase<T>
     where T : class
 {
     private readonly StreetcodeDbContext _dbContext;
@@ -28,15 +28,9 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T>
         return _dbContext.Set<T>().Add(entity).Entity;
     }
 
-    public async Task<T> CreateAsync(T entity)
+    public void CreateRange(IEnumerable<T> items)
     {
-        var tmp = await _dbContext.Set<T>().AddAsync(entity);
-        return tmp.Entity;
-    }
-
-    public Task CreateRangeAsync(IEnumerable<T> items)
-    {
-        return _dbContext.Set<T>().AddRangeAsync(items);
+        _dbContext.Set<T>().AddRange(items);
     }
 
     public EntityEntry<T> Update(T entity)
@@ -96,7 +90,7 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T>
         return (query is null) ? _dbContext.Set<T>() : query.AsQueryable();
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync(
+    public async Task<IEnumerable<T>?> GetAllAsync(
         Expression<Func<T, bool>>? predicate = default,
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
     {
@@ -131,6 +125,22 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T>
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
     {
         return await GetQueryable(predicate, include, selector).FirstOrDefaultAsync();
+    }
+
+    public async Task<T?> GetItemBySpecAsync(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<T>?> GetItemsBySpecAsync(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).ToListAsync();
+    }
+
+    private IQueryable<T> ApplySpecification(ISpecification<T> specification)
+    {
+        var evaluator = new SpecificationEvaluator();
+        return evaluator.GetQuery(_dbContext.Set<T>(), specification);
     }
 
     private IQueryable<T> GetQueryable(

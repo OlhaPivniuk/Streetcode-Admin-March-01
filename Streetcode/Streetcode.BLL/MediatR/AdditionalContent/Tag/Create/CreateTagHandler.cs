@@ -1,13 +1,13 @@
 using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.Create
 {
-  public class CreateTagHandler : IRequestHandler<CreateTagQuery, Result<TagDTO>>
+  public class CreateTagHandler : IRequestHandler<CreateTagQuery, Result<TagDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -20,16 +20,16 @@ namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.Create
             _logger = logger;
         }
 
-        public async Task<Result<TagDTO>> Handle(CreateTagQuery request, CancellationToken cancellationToken)
+        public async Task<Result<TagDto>> Handle(CreateTagQuery request, CancellationToken cancellationToken)
         {
-            var newTag = await _repositoryWrapper.TagRepository.CreateAsync(new DAL.Entities.AdditionalContent.Tag()
+            var newTag = _repositoryWrapper.TagRepository.Create(new DAL.Entities.AdditionalContent.Tag()
             {
                 Title = request.tag.Title
             });
 
             try
             {
-                _repositoryWrapper.SaveChanges();
+                await _repositoryWrapper.SaveChangesAsync();
             }
             catch(Exception ex)
             {
@@ -37,7 +37,7 @@ namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.Create
                 return Result.Fail(ex.ToString());
             }
 
-            return Result.Ok(_mapper.Map<TagDTO>(newTag));
+            return Result.Ok(_mapper.Map<TagDto>(newTag));
         }
     }
 }

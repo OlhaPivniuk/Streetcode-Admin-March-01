@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.MediatR.Streetcode.RelatedFigure.Create;
 using Streetcode.BLL.MediatR.Streetcode.RelatedFigure.Delete;
@@ -6,14 +7,17 @@ using Streetcode.BLL.MediatR.Streetcode.RelatedFigure.GetByTagId;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
+[Authorize(Roles = "Admin")]
 public class RelatedFigureController : BaseApiController
 {
+    [AllowAnonymous]
     [HttpGet("{streetcodeId:int}")]
     public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new GetRelatedFigureByStreetcodeIdQuery(streetcodeId)));
     }
 
+    [AllowAnonymous]
     [HttpGet("{tagId:int}")]
     public async Task<IActionResult> GetByTagId([FromRoute] int tagId)
     {
